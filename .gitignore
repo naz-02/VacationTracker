@@ -1,0 +1,37 @@
+# Visual Studio / IDEs
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build Results
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# Local Database & Logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*build_errors*.txt
+*build_log*.txt
+*run_output*.txt
+
+# MacOS / Mobile
+.DS_Store
+*.apk
+*.aab
+*.ipa
+
+# Reserved Windows Filenames
+con.png
+
+# Sensitive Documents
+*.pdf
+*.docx
+

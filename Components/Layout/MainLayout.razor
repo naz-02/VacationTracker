@@ -1,0 +1,20 @@
+@inherits LayoutComponentBase
+
+<div class="page">
+    <div class="sidebar-holder">
+        <NavMenu />
+    </div>
+
+    <main class="main-content">
+        <div class="banner">
+            <h5 class="mb-0 fw-bold text-dark">
+                <i class="bi bi-shield-check text-success me-2"></i>
+                Province de Berkane | Système de Gestion des Congés
+            </h5>
+        </div>
+
+        <div class="scroll-container animate-fade-in">
+            @Body
+        </div>
+    </main>
+</div>

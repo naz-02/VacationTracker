@@ -1,0 +1,226 @@
+@page "/admin/manage"
+@using VacationTracker.Models
+@using VacationTracker.Services
+@inject DatabaseService DbService
+@inject AuthService Auth
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+@if (!Auth.IsAuthenticated)
+{
+    <div class="text-center py-5 animate-fade-in">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="mt-3 text-muted fw-bold">Vérification de l'authentification...</p>
+    </div>
+}
+else
+{
+    <div class="animate-fade-in">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-black text-dark mb-1">Administration Système</h2>
+                <p class="text-muted small mb-0 font-italic">Gestion des dossiers et configuration des ressources</p>
+            </div>
+            <button class="btn btn-outline-danger btn-sm rounded-pill px-3" @onclick="Logout">
+                <i class="bi bi-box-arrow-right me-2"></i>Déconnexion
+            </button>
+        </div>
+
+        <div class="admin-card p-0 overflow-hidden border-0 shadow-sm">
+            <!-- TABS HEADER -->
+            <div class="bg-light p-3 border-bottom d-flex gap-3 justify-content-start">
+                <button class="tab-btn @(activeTab == "pending" ? "active" : "")" @onclick='() => activeTab = "pending"'>
+                    <i class="bi bi-clock-history me-2"></i>En Attente
+                </button>
+                <button class="tab-btn @(activeTab == "history" ? "active" : "")" @onclick='() => activeTab = "history"'>
+                    <i class="bi bi-check2-all me-2"></i>Historique Validé
+                </button>
+                <button class="tab-btn @(activeTab == "holidays" ? "active" : "")" @onclick='() => activeTab = "holidays"'>
+                    <i class="bi bi-calendar3 me-2"></i>Calendrier Férié
+                </button>
+            </div>
+
+            <!-- TABS CONTENT -->
+            <div class="p-4">
+                @if (activeTab == "pending")
+                {
+                    <div style="max-height: 500px; overflow-y: scroll; display: block; background: white;">
+                        <table class="v2-table">
+                            <thead>
+                                <tr>
+                                    <th>Détails Employé</th>
+                                    <th>Période Sollicitée</th>
+                                    <th>Actions de Validation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var trip in pendingTrips ?? new())
+                                {
+                                    var emp = employees?.FirstOrDefault(e => e.Id == trip.EmployeeId);
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold text-dark">@(emp?.FullName ?? "Inconnu")</div>
+                                            <div class="text-muted extra-small">@emp?.Role</div>
+                                        </td>
+                                        <td>
+                                            <div class="fw-bold">@trip.StartDate.ToShortDateString()</div>
+                                            <div class="text-muted small">au @trip.EndDate.ToShortDateString()</div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <button class="btn btn-success btn-sm rounded-3 fw-bold px-3 shadow-sm" @onclick="() => ApproveTrip(trip)">Valider</button>
+                                                <button class="btn btn-outline-danger btn-sm rounded-3 px-3" @onclick="() => RejectTrip(trip)">Refuser</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else if (activeTab == "history")
+                {
+                    <div style="max-height: 500px; overflow-y: scroll; display: block; background: white;">
+                        <table class="v2-table">
+                            <thead>
+                                <tr>
+                                    <th>Employé & Service</th>
+                                    <th>Type & Dates</th>
+                                    <th class="text-center">Édition des Documents</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var trip in approvedTrips?.OrderByDescending(t => t.StartDate) ?? Enumerable.Empty<Trip>())
+                                {
+                                    var emp = employees?.FirstOrDefault(e => e.Id == trip.EmployeeId);
+                                    <tr>
+                                        <td>
+                                            <div class="fw-bold text-dark">@(emp?.FullName ?? "Employé")</div>
+                                            <div class="text-muted extra-small">@emp?.Department</div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-green-soft text-success border border-success border-opacity-25 mb-1">@trip.LeaveType</span>
+                                            <div class="small fw-bold">@trip.StartDate.ToShortDateString() - @trip.EndDate.ToShortDateString()</div>
+                                        </td>
+                                        <td class="text-center">
+                                            <button class="btn btn-success btn-sm rounded-pill fw-bold me-1 px-3 shadow-sm" @onclick="() => PrintAR(trip.Id)">AR 🇲🇦</button>
+                                            <button class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3" @onclick="() => PrintFR(trip.Id)">FR 🇫🇷</button>
+                                            <button class="btn btn-link text-danger btn-sm ms-2" @onclick="() => DeleteTrip(trip.Id)"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div style="max-height: 500px; overflow-y: scroll; display: block; background: white;">
+                        <table class="v2-table">
+                            <thead>
+                                <tr>
+                                    <th>Désignation de la Fête</th>
+                                    <th>Date Effective 2026</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var holiday in holidays)
+                                {
+                                    <tr>
+                                        <td><div class="fw-bold text-dark">@holiday.Name</div></td>
+                                        <td><div class="text-success fw-bold"><i class="bi bi-calendar-check me-2"></i>@holiday.Date.ToString("dd MMMM yyyy")</div></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .fw-black { font-weight: 900; }
+    .extra-small { font-size: 0.75rem; }
+    
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 10px 20px;
+        color: #64748b;
+        font-weight: 700;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    
+    .tab-btn:hover {
+        background: rgba(0,0,0,0.03);
+        color: var(--primary-green);
+    }
+    
+    .tab-btn.active {
+        background: white;
+        color: var(--primary-green);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+</style>
+
+@code {
+    private string activeTab = "pending";
+    private List<Trip>? pendingTrips;
+    private List<Trip>? approvedTrips;
+    private List<Employee>? employees;
+    private List<Holiday> holidays = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Auth.IsAuthenticated)
+        {
+            Nav.NavigateTo("/admin/login");
+            return;
+        }
+        await RefreshData();
+    }
+
+    private async Task RefreshData()
+    {
+        var all = await DbService.GetTripsAsync();
+        pendingTrips = all.Where(t => t.Status == "Pending").ToList();
+        approvedTrips = all.Where(t => t.Status == "Approved").ToList();
+        employees = await DbService.GetEmployeesAsync();
+        holidays = await DbService.GetHolidaysAsync();
+        StateHasChanged();
+    }
+
+    private void Logout()
+    {
+        Auth.Logout();
+        Nav.NavigateTo("/admin/login");
+    }
+
+    private async Task ApproveTrip(Trip trip)
+    {
+        await DbService.ApproveTripAsync(trip.Id);
+        await RefreshData();
+    }
+
+    private async Task RejectTrip(Trip trip)
+    {
+        await DbService.RejectTripAsync(trip.Id);
+        await RefreshData();
+    }
+
+    private void PrintAR(int id) => Nav.NavigateTo($"/print/{id}?lang=ar");
+    private void PrintFR(int id) => Nav.NavigateTo($"/print/{id}?lang=fr");
+
+    private async Task DeleteTrip(int id)
+    {
+        var trip = pendingTrips?.FirstOrDefault(t => t.Id == id) ?? approvedTrips?.FirstOrDefault(t => t.Id == id);
+        if (trip != null)
+        {
+            await DbService.DeleteTripAsync(trip);
+            await RefreshData();
+        }
+    }
+}

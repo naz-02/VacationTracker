@@ -1,0 +1,236 @@
+@page "/print/{TripId:int}"
+@layout VacationTracker.Components.Layout.EmptyLayout
+@using VacationTracker.Models
+@using VacationTracker.Services
+@using System.Globalization
+@inject DatabaseService DbService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<div class="print-container">
+    @if (trip == null || employee == null)
+    {
+        <div class="text-center p-5">
+            <div class="spinner-border text-success" role="status"></div>
+            <p class="mt-2 text-muted fw-bold">Préparation du document officiel...</p>
+        </div>
+    }
+    else
+    {
+        <!-- Action bar visible only on screen -->
+        <div class="d-print-none mb-5 text-center sticky-top py-4 bg-white shadow-sm w-100 border-bottom" style="z-index: 1000;">
+            <div class="container d-flex justify-content-center gap-3">
+                <button class="btn btn-success btn-lg rounded-pill px-5 fw-black shadow-sm" @onclick='() => JS.InvokeVoidAsync("window.print")'>
+                    <i class="bi bi-printer-fill me-2"></i> IMPRIMER LE DOCUMENT
+                </button>
+                <button class="btn btn-outline-dark btn-lg rounded-pill px-5 fw-bold" @onclick='() => Nav.NavigateTo("/admin/manage")'>
+                    <i class="bi bi-arrow-left-circle me-2"></i> RETOUR
+                </button>
+            </div>
+        </div>
+
+        <!-- Official Document -->
+        <div class="document shadow-lg mb-5 print-times @(lang == "ar" ? "rtl" : "ltr")">
+            
+            @if (lang == "ar")
+            {
+                <!-- 100% ARABIC VERSION (OFFICIAL BERKANE COUNCIL) -->
+                <div class="arabic">
+                    <div class="d-flex justify-content-between mb-5">
+                        <div class="text-start"> @* Start is Right in RTL *@
+                            <h5 class="fw-bold mb-1">المملكة المغربية</h5>
+                            <h5 class="fw-bold mb-1">عـمالة إقليم بركـان</h5>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="fw-bold mb-1">وزارة الداخليـة</h5>
+                        </div>
+                        <div class="text-end"> @* End is Left in RTL *@
+                             <h6 class="fw-bold">بركان في: @DateTime.Now.ToString("dd MMMM yyyy", new CultureInfo("ar-SA"))</h6>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-5">
+                        <h4 class="fw-bold mb-1">المجلس الإقليمي لبركان</h4>
+                        <h5 class="fw-bold">المديرية العامة للمصالح</h5>
+                    </div>
+
+                    <div class="subject-title text-center my-5 py-3 border border-dark border-2">
+                        <h1 class="fw-bold" style="font-size: 2.2rem;">
+                            @(trip.LeaveType == "Annuel" ? "قرار منح رخصة إدارية" : "قرار منح رخصة استثنائية")
+                        </h1>
+                    </div>
+
+                    <div class="legal-citations mb-5" style="line-height: 2;">
+                        <div class="fw-bold text-decoration-underline mb-3">رئيس المجلس الإقليمي لبركان،</div>
+                        <p class="mb-1">- بناء على الظهير الشريف رقم 1.15.84 الصادر في 7 يوليو 2015 المتعلق بالقانون التنظيمي رقم 112.14 الخاص بالعمالات والأقاليم؛</p>
+                        <p class="mb-1">- بناء على الظهير الشريف رقم 1.58.008 الصادر في 24 فبراير 1958 بمثابة النظام الأساسي العام للوظيفة العمومية؛</p>
+                        <p class="mb-1">- بناء على طلب رخصة التغيب المقدم من طرف المعني(ة) بالأمر؛</p>
+                        <p class="mb-1">- وباقتراح من المدير العام للمصالح؛</p>
+                        <div class="text-center fw-bold mt-4 fs-4">يقرر ما يلي:</div>
+                    </div>
+
+                    <div class="article-box p-4 border border-dark mb-5" style="line-height: 2;">
+                        <div class="text-center fw-bold mb-3 text-decoration-underline">فصل وحيد</div>
+                        تمنح للسيد(ة): <strong>@(employee.FullName.Contains("/") ? employee.FullName.Split('/')[1].Trim() : employee.FullName)</strong><br/>
+                        الدرجة: <strong>@employee.Role</strong><br/>
+                        المصلحة: <strong>@employee.Department</strong><br/>
+                        
+
+                        رخصة غياب مدتها <strong>@totalDays</strong> أيام عمل،<br/>
+                        ابتداء من تاريخ: <strong>@trip.StartDate.ToString("dd/MM/yyyy")</strong> إلى غاية: <strong>@trip.EndDate.ToString("dd/MM/yyyy")</strong> (ضمنا).
+                    </div>
+
+                    <div class="text-center mt-5 pt-5">
+                        <h4 class="fw-bold text-decoration-underline">عن رئيس المجلس الإقليمي</h4>
+                        <div style="height: 60px;"></div>
+                        <h4 class="fw-bold">المدير العام للمصالح</h4>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- 100% FRENCH VERSION (OFFICIAL BERKANE COUNCIL) -->
+                <div class="french text-start">
+                    <div class="d-flex justify-content-between mb-5">
+                        <div class="text-start"> @* Start is Left in LTR *@
+                            <h5 class="fw-bold mb-1">ROYAUME DU MAROC</h5>
+                            <h5 class="fw-bold mb-1">PROVINCE DE BERKANE</h5>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="fw-bold mb-1">CONSEIL PROVINCIAL</h5>
+                        </div>
+                        <div class="text-end"> @* End is Right in LTR *@
+                            <h6 class="fw-bold">Fait à Berkane, le : @DateTime.Now.ToString("dd/MM/yyyy")</h6>
+                        </div>
+                    </div>
+
+                    <div class="subject-title text-center my-5 py-3 border border-dark border-2">
+                        <h1 class="fw-black" style="font-size: 3rem; letter-spacing: 2px;">DECISION DE CONGE</h1>
+                    </div>
+
+                    <div class="legal-citations mb-5" style="line-height: 1.8;">
+                        <div class="fw-black mb-3 text-decoration-underline">Le Président du Conseil Provincial de Berkane,</div>
+                        <p class="mb-1">- Vu le Dahir n° 1-15-84 du 20 ramadan 1436 (7 juillet 2015) fixant le régime financier;</p>
+                        <p class="mb-1">- Vu le Dahir n° 1-58-008 du 24 Février 1958 portant statut de la fonction publique;</p>
+                        <p class="mb-1">- Vu la demande formulée par l'intéressé(e);</p>
+                        <p class="mb-1">- Sur proposition du Directeur Général des Services;</p>
+                        <div class="text-center fw-black mt-4 fs-4">DECIDE</div>
+                    </div>
+
+                    <div class="article-box p-4 border border-dark mb-5" style="line-height: 1.8;">
+                        <div class="text-center fw-black mb-3 text-decoration-underline">ARTICLE UNIQUE</div>
+                        Il est accordé à M/Mme : <strong>@employee.FullName.Split('/')[0].Trim()</strong><br/>
+                        Grade : <strong>@employee.Role</strong><br/>
+                        Affectation : <strong>@employee.Department</strong><br/>
+                        
+
+                        Un congé d'une durée de <strong>@totalDays</strong> jours ouvrables,<br/>
+                        Allant du : <strong>@trip.StartDate.ToString("dd/MM/yyyy")</strong> au : <strong>@trip.EndDate.ToString("dd/MM/yyyy")</strong> (Inclus).
+                    </div>
+
+                    <div class="text-center mt-5 pt-5">
+                        <h5 class="fw-black text-decoration-underline">LE DIRECTEUR GENERAL DES SERVICES</h5>
+                    </div>
+                </div>
+            }
+
+            <!-- Official Stamp (Bottom Center-ish) -->
+            <div class="official-stamp-container position-absolute" style="bottom: 120px; right: 120px;">
+                <div class="official-stamp">
+                    <div class="stamp-content">
+                        <strong>CONSEIL PROVINCIAL</strong><br/>
+                        <small>BERKANE</small><br/>
+                        <div class="my-1 border-top border-bottom border-success">VISA DG</div>
+                        <small>Ref: CPB-@trip.Id</small>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+
+<style>
+    html, body {
+        overflow: auto !important;
+        height: auto !important;
+    }
+
+    @@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap');
+    
+    .print-container {
+        font-family: 'Inter', -apple-system, system-ui, sans-serif;
+        background: #f1f5f9;
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .document {
+        background: white;
+        width: 210mm;
+        min-height: 297mm;
+        padding: 25mm 20mm;
+        color: #000;
+        position: relative;
+    }
+
+    .rtl { direction: rtl; text-align: right; }
+    .ltr { direction: ltr; text-align: left; }
+
+    .print-times { font-family: 'Times New Roman', Times, serif; }
+    .arabic { font-family: 'Noto Sans Arabic', serif; }
+    .fw-black { font-weight: 900; }
+    
+    .official-stamp {
+        width: 120px; height: 120px;
+        border: 4px double var(--primary-green);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        transform: rotate(-15deg);
+        color: var(--primary-green);
+        opacity: 0.5;
+    }
+    .stamp-content { text-align: center; font-size: 0.65rem; line-height: 1.1; }
+
+    @@media print {
+        .d-print-none { display: none !important; }
+        body { background: white !important; padding: 0 !important; }
+        .document { box-shadow: none !important; width: 100% !important; margin: 0 !important; border: none !important; }
+    }
+</style>
+
+@code {
+    [Parameter] public int TripId { get; set; }
+    
+    [Parameter] 
+    [SupplyParameterFromQuery]
+    public string? lang { get; set; } = "fr";
+
+    private Trip? trip;
+    private Employee? employee;
+    private int totalDays = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        trip = await DbService.GetTripByIdAsync(TripId);
+        if (trip != null)
+        {
+            employee = await DbService.GetEmployeeByIdAsync(trip.EmployeeId);
+            totalDays = DbService.CalculateWorkingDays(trip.StartDate, trip.EndDate);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && trip != null && employee != null)
+        {
+            await Task.Delay(800); // Give time for browser to settle
+            await JS.InvokeVoidAsync("window.print");
+        }
+    }
+}
+
+

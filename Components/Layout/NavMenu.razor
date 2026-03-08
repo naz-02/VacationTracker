@@ -1,0 +1,63 @@
+<div class="v2-sidebar d-flex flex-column h-100 p-4">
+    <div class="sidebar-header mb-5 text-center">
+        <img src="images/logo_berkane.png" alt="Province de Berkane" style="height: 70px;" class="mb-3" />
+        <h6 class="fw-bold text-dark mt-2 mb-0" style="font-size: 0.85rem; letter-spacing: 1px;">CONSEIL PROVINCIAL</h6>
+        <div class="hr-gold mt-2 mx-auto" style="width: 40px; height: 3px; background: var(--accent-gold);"></div>
+    </div>
+
+    <div class="flex-grow-1">
+        <NavLink class="nav-link-v2 mb-3" href="" Match="NavLinkMatch.All">
+            <i class="bi bi-speedometer2 me-3 fs-5"></i>
+            <span>Tableau de Bord</span>
+        </NavLink>
+
+        <NavLink class="nav-link-v2 mb-3" href="trips">
+            <i class="bi bi-file-earmark-text me-3 fs-5"></i>
+            <span>Mes Demandes</span>
+        </NavLink>
+
+        <NavLink class="nav-link-v2 mb-3" href="admin/manage">
+            <i class="bi bi-briefcase me-3 fs-5"></i>
+            <span>Administration</span>
+        </NavLink>
+    </div>
+
+    <div class="sidebar-footer pt-4 border-top">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="bg-green-soft rounded-circle p-2 text-success">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div>
+                <p class="mb-0 fw-bold small text-dark">Agent Session</p>
+                <span class="text-muted" style="font-size: 0.7rem;">Connecté</span>
+            </div>
+        </div>
+        <div class="text-center">
+            <span class="text-muted extra-small opacity-50">BUILD: BERKANE-FINAL-V2</span>
+        </div>
+    </div>
+</div>
+
+<style>
+    .nav-link-v2 {
+        display: flex;
+        align-items: center;
+        padding: 12px 18px;
+        color: #64748b;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link-v2:hover {
+        background: rgba(0, 98, 51, 0.05);
+        color: var(--primary-green);
+    }
+
+    .nav-link-v2.active {
+        background: var(--primary-green);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 98, 51, 0.2);
+    }
+</style>
