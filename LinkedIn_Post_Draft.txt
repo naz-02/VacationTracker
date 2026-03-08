@@ -1,0 +1,21 @@
+I am thrilled to announce my latest software engineering project: Vacation Tracker! 🇲🇦🌴
+
+This modern, offline-first Windows desktop application was developed to automate HR leave management for the Provincial Council of Berkane. 
+
+Managing employee vacations, calculating deducticions, and factoring in official holidays is mathematically complex. Vacation Tracker eliminates this friction by bringing the logic entirely client-side.
+
+Watch the short demo video below! 🎥👇
+
+Core Technical Highlights:
+🔹 Blazor Hybrid Architecture: Built with .NET 8 MAUI and Blazor WebAssembly, offering a responsive UI with native Windows access.
+🔹 Embedded SQLite Database: Utilizes Entity Framework Core for instantaneous data retrieval and completely offline functionality.
+🔹 Custom Holiday Algorithm: Automatically parses requests, skips weekends, and correctly subtracts official 2026 Moroccan holidays (like Aïd el-Fitr) for 100% mathematical accuracy.
+🔹 Dynamic UI Validation: Real-time visual alerts notify staff if selected dates intersect with public holidays.
+🔹 Native Compilation: Compiled natively into a .exe with background PowerShell scripting to map custom Windows iconography.
+
+Privacy First: The public GitHub repository has been thoroughly sanitized. All PII and real employee names were scrubbed and replaced with generic, anonymized profiles. The repo maintains 100% of the functional logic. 
+
+Feel free to explore the architecture and source code on GitHub!
+🔗 https://github.com/naz-02/VacationTracker
+
+#DotNet #MAUI #Blazor #SoftwareEngineering #CSharp #DesktopDevelopment #Morocco #SoftwareArchitecture
