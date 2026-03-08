@@ -103,7 +103,7 @@
         if (selectedEmployeeId == 0) return;
 
         newTrip.EmployeeId = selectedEmployeeId;
-        newTrip.Status = "Pending";
+        newTrip.Status = "En attente";
 
         int res = await DbService.AddTripAsync(newTrip);
         if (res > 0)

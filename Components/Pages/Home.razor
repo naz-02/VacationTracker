@@ -95,7 +95,7 @@
         employeeCount = employees?.Count ?? 0;
 
         var trips = await DbService.GetTripsAsync();
-        pendingCount = trips?.Count(t => t.Status == "Pending") ?? 0;
+        pendingCount = trips?.Count(t => t.Status == "En attente" || t.Status == "Pending") ?? 0;
 
         var holidays = await DbService.GetHolidaysAsync();
         holidayCount = holidays?.Count ?? 0;

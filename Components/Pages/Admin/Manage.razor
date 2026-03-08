@@ -186,8 +186,8 @@ else
     private async Task RefreshData()
     {
         var all = await DbService.GetTripsAsync();
-        pendingTrips = all.Where(t => t.Status == "Pending").ToList();
-        approvedTrips = all.Where(t => t.Status == "Approved").ToList();
+        pendingTrips = all.Where(t => t.Status == "En attente" || t.Status == "Pending").ToList();
+        approvedTrips = all.Where(t => t.Status == "Approuvée" || t.Status == "Approved").ToList();
         employees = await DbService.GetEmployeesAsync();
         holidays = await DbService.GetHolidaysAsync();
         StateHasChanged();

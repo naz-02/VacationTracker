@@ -175,14 +175,14 @@ public class DatabaseService
     {
         await InitAsync();
         var trip = await GetTripByIdAsync(tripId);
-        if (trip != null && trip.Status != "Approved")
+        if (trip != null && trip.Status != "Approved" && trip.Status != "Approuvée")
         {
             if (trip.LeaveType == "Annuel")
             {
                 var days = CalculateWorkingDays(trip.StartDate, trip.EndDate);
                 await UpdateEmployeeBalanceAsync(trip.EmployeeId, (decimal)days);
             }
-            trip.Status = "Approved";
+            trip.Status = "Approuvée";
             return await _database!.UpdateAsync(trip);
         }
         return 0;
@@ -194,7 +194,7 @@ public class DatabaseService
         var trip = await GetTripByIdAsync(tripId);
         if (trip != null)
         {
-            trip.Status = "Rejected";
+            trip.Status = "Refusée";
             return await _database!.UpdateAsync(trip);
         }
         return 0;
